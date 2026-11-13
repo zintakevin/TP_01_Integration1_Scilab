@@ -6,23 +6,23 @@
 \usepackage{geometry}
 \usepackage{array}
 \usepackage{listings}
+\usepackage[hidelinks]{hyperref}
 \geometry{margin=2.5cm}
 
 \lstset{basicstyle=\ttfamily\small, breaklines=true, frame=single,
   columns=fullflexible, keepspaces=true}
 
-\title{MN2 -- TP Scilab\\Proposition de correction}
-% Pour plusieurs auteurs : \author{Nom 1 \and Nom 2 \and Nom 3}
-\author{Zonou Zinta-Kevin}
+\title{TP 01: MÉTHODE NUMÉRIQUE\\Titre: De la méthode a un décision sur l'energie}
+\author{ZONOU Zinta-Kévin\\KONTILIGSONKO Abdoulaye\\TIONOU Bibata}
 \date{\today}
 
 \begin{document}
 \maketitle
 
-\noindent\textbf{Vérification :} toutes les valeurs numériques ci-dessous ont été recalculées avec Scilab 2024.0.0 (routines de l'Annexe A et blocs TODO de l'Annexe B), et confirment les résultats obtenus précédemment en Python.
-
 %----------------------------------------------------------------
-\section{Contrôle sur $f(x)=e^x$}
+\section{Objectif et méthodes}
+Le travail consiste a vérifier les méthodes des trapèzes et de Simpson sur une fonction dont l'intégrale est connue, puis la appliquer aux mesures de puissances d'une pompe enfin d'estimer l'énergie consommé. Toutes les valeurs numériques ci-dessous ont été recalculées avec Scilab 2024.0.0 (routines de l'Annexe A et blocs TODO de l'Annexe B)
+\section{Convergence sur le modèle continu}
 
 Référence : $I_{\mathrm{ref}}=\displaystyle\int_0^1 e^x\,dx=e-1\approx 1{,}718281828$.
 
@@ -40,48 +40,30 @@ $n$ & $T_n$ & $S_n$ & $E_n(T)$ & $E_n(S)$ & $p(T)$ & $p(S)$\\
 \end{tabular}
 \end{center}
 
-\noindent\textbf{Question de décision.} Oui : les ordres observés tendent vers $2$ (trapèzes) et $4$ (Simpson), comme prévu par le CM1.
+\noindent\textbf{Réponse:} Oui : les ordres observés tendent vers $2$ (trapèzes) et $4$ (Simpson), comme prévu par le CM1.
 Le calcul de $p=\log(E_n/E_{2n})/\log 2$ n'est fiable que si les erreurs sont nettement supérieures à l'erreur d'arrondi (de l'ordre de $10^{-16}$). Si l'erreur est nulle, le rapport est indéfini ; si elle est proche de l'arrondi, elle est dominée par le bruit numérique. D'où le retour \texttt{\%nan} de \texttt{ordre\_observe} lorsque $E\le 0$.
 
 %----------------------------------------------------------------
-\section{Intégrale discrète : la pompe}
-
+\section{Estimation de l'énergie de la pompe}
+Le temps initialement en minutes est convertis en heures.
 Temps en heures : $0,\ \tfrac16,\ \tfrac13,\ \tfrac12,\ \tfrac23$ (pas $h=\tfrac16$ h), $P=2{,}0;\ 2{,}6;\ 3{,}0;\ 2{,}5;\ 1{,}9$ kW.
 
-\[
-T_4 = 1{,}675000\ \text{kWh},\qquad
+\[  
+T_4 = 1{,}675000\ \text{kWh},\qquad 
 S_4 = 1{,}683333\ \text{kWh},\qquad
 |T_4-S_4| = 0{,}008333\ \text{kWh}.
 \]
-
-Borne due aux lectures : $0{,}1\times 40/60 = 0{,}066667$ kWh. L'écart entre méthodes est environ huit fois plus petit que cette contribution maximale.
+\noindent\textbf{Bornes due aux  incertitudes de lectures calculer :} \\Chaque lecture comporte une incertitude maximale  de lectures : $0{,}1\times 40/60 = 0{,}066667$ kWh. \\
+L'écart entre méthodes est environ huit fois plus petit que cette contribution maximale.
 
 \medskip
-\noindent\textbf{Question d'ingénieur.} On communiquerait une énergie d'environ $1{,}68$ kWh sur 40 min, avec une incertitude d'environ $\pm 0{,}07$ kWh ($\approx 4\,\%$). Le choix trapèzes/Simpson est négligeable devant l'incertitude des mesures. Avec cinq relevés espacés de dix minutes, il n'existe ni maillages emboîtés ni référence exacte : on ne peut donc pas vérifier la convergence ni calculer un ordre.
+\section{Decision et limites}
+\noindent\textbf{R.} On communiquerait une énergie d'environ $1{,}68$ kWh sur 40 min, avec une incertitude d'environ $\pm 0{,}07$ kWh ($\approx 4\,\%$). Le choix trapèzes/Simpson est négligeable devant l'incertitude des mesures. Avec cinq relevés espacés de dix minutes, il n'existe ni maillages emboîtés ni référence exacte : on ne peut donc pas vérifier la convergence ni calculer un ordre.
 
 %----------------------------------------------------------------
-\section{Contrôles et remise}
-
-Pour $P(t)=10+4t-t^2$ aux temps $0,1,2,3,4$ s : $T_4=50$ J et $S_4=152/3\approx 50{,}667$ J. Les routines sont validées. Si les temps sont irréguliers, seuls les trapèzes sont utilisables ; Simpson uniforme doit refuser ces données.
+\section{Reproductibilité}
+\url{https://github.com/zintakevin/Integration-Numerique}
 
 %----------------------------------------------------------------
-\section*{Annexe B -- Blocs TODO complétés}
-
-\begin{lstlisting}
-// TODO 1
-ET(k) = trapezes(t, y);
-ES(k) = simpson(t, y);
-// TODO 2
-errT(k) = abs(ET(k) - Iref);
-errS(k) = abs(ES(k) - Iref);
-// TODO 3
-pT = ordre_observe(errT(k), errT(k+1));
-pS = ordre_observe(errS(k), errS(k+1));
-// TODO 4
-th(i) = tmin(i)/60;
-// TODO 5
-Etrap = trapezes(th, Pkw);
-Esimp = simpson(th, Pkw);
-\end{lstlisting}
 
 \end{document}
